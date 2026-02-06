@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Ultimate GitHub Website Builder - Free Open Source Portfolio Maker</title>
+    <meta name="description" content="Create a professional, SEO-optimized GitHub Pages portfolio in seconds with this free, open-source website builder. No coding required. Customizable themes and layouts.">
+    <link rel="canonical" href="https://pierrecochart.github.io/github-website-builder/">
+
+    <style>
+        :root {
+            --primary: #2563eb;
+            --bg-panel: #f8fafc;
+            --border: #e2e8f0;
+            --text-main: #334155;
+            --accent-red: #ef4444;
+        }
+
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; height: 100vh; display: flex; overflow: hidden; color: var(--text-main); }
+
+        /* --- BUILDER LAYOUT --- */
+        .builder-container { display: flex; width: 100%; height: 100%; }
+
+        /* Sidebar */
+        .controls {
+            width: 440px;
+            background: #fff;
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            flex-shrink: 0;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+        h2 { font-size: 1.1rem; margin: 0; color: #1e293b; font-weight: 700; }
+        
+        /* Toggle Switch */
+        .toggle-wrapper { display: flex; align-items: center; font-size: 0.8rem; cursor: pointer; user-select: none; }
+        .toggle-wrapper input { margin-right: 8px; cursor: pointer; }
+
+        .input-group {
+            background: var(--bg-panel);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        label { display: block; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; margin-bottom: 4px; }
+        input[type="text"], input[type="url"], textarea, select {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-family: inherit;
+        }
+        input:focus, textarea:focus, select:focus { outline: 2px solid var(--primary); border-color: transparent; }
+        textarea { min-height: 80px; resize: vertical; }
+
+        /* Buttons */
+        .btn { border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: 500; transition: 0.2s; }
+        .btn-primary { background: var(--primary); color: white; width: 100%; padding: 10px; font-weight: 600; }
+        .btn-primary:hover { background: #1d4ed8; }
+        .btn-add { background: #e2e8f0; color: #334155; width: 100%; margin-top: 5px; }
+        .btn-add:hover { background: #cbd5e1; }
+        .btn-remove { background: #fee2e2; color: var(--accent-red); padding: 4px 8px; font-size: 0.8rem; }
+        .btn-remove:hover { background: #fecaca; }
+
+        /* List Items */
+        .list-item {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+        .list-item-header { display: flex; justify-content: space-between; margin-bottom: 8px; align-items: center; }
+        
+        .tag-container { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
+        .category-tag { 
+            background: #e0e7ff; color: #3730a3; padding: 2px 8px; 
+            border-radius: 12px; font-size: 0.75rem; display: flex; align-items: center; gap: 5px; 
+        }
+
+        /* Buy Me A Coffee Button Style */
+        .bmc-container {
+            background: #fffbeb;
+            border: 1px solid #fcd34d;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .bmc-text {
+            font-size: 0.85rem;
+            color: #92400e;
+            margin: 0 0 10px 0;
+            line-height: 1.4;
+        }
+        .bmc-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #FFDD00;
+            color: #000000;
+            text-decoration: none;
+            font-family: 'Inter', sans-serif; /* Fallback to sans-serif for clean look */
+            font-weight: 600;
+            font-size: 1rem;
+            padding: 8px 16px;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .bmc-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+        }
+
+        /* Preview Pane */
+        .preview-pane {
+            flex-grow: 1;
+            background: #e5e7eb;
+            display: flex;
+            flex-direction: column;
+        }
+        .toolbar {
+            height: 60px;
+            background: white;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            z-index: 10;
+        }
+        iframe { width: 100%; height: 100%; border: none; background: white; }
+
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 9999; justify-content: center; align-items: center; }
+        .modal-content { background: white; width: 80%; max-width: 900px; padding: 25px; border-radius: 10px; display: flex; flex-direction: column; gap: 15px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+        .code-area { background: #1e293b; color: #e2e8f0; padding: 15px; border-radius: 6px; font-family: monospace; height: 350px; overflow: auto; white-space: pre; font-size: 0.85rem; }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="builder-container">
+    <div class="controls">
+        <div style="text-align:center; padding-bottom:5px;">
+            <h1 style="font-size:1.5rem; margin:0; color:var(--primary);">Site Builder</h1>
+            <p style="font-size:0.8rem; color:#64748b; margin:5px 0 0 0;">Configure your GitHub Page</p>
+        </div>
+
+        <div class="bmc-container">
+            <p class="bmc-text">
+                <strong>Free & Open Source Tool.</strong><br>
+                Build your portfolio entirely for free. If you find this useful, consider buying me a coffee!
+            </p>
+            <a href="https://www.buymeacoffee.com/PierreCochart" target="_blank" class="bmc-btn">
+                <span style="margin-right: 8px; font-size: 1.2rem;">☕</span> Buy me a coffee
+            </a>
+        </div>
+
+        <div>
+            <div class="section-header">
+                <h2>SEO & Meta Data</h2>
+            </div>
+            <div class="input-group">
+                <label>Page Title</label>
+                <input type="text" id="seo-title" placeholder="e.g. Jane Doe - Portfolio" oninput="updatePreview()">
+                
+                <label>Meta Description</label>
+                <textarea id="seo-desc" placeholder="A brief summary for Google search results..." style="min-height:60px;" oninput="updatePreview()"></textarea>
+                
+                <label>Canonical Link</label>
+                <input type="url" id="seo-canonical" placeholder="https://your-domain.com" oninput="updatePreview()">
+            </div>
+        </div>
+
+        <div>
+            <div class="section-header">
+                <h2>Appearance</h2>
+            </div>
+            <div class="input-group">
+                <label>Visual Theme</label>
+                <select id="theme-select" onchange="updatePreview()">
+                    <option value="modern">Modern Blue (Clean)</option>
+                    <option value="dark">Cyber Dark (Developer)</option>
+                    <option value="minimal">Paper Minimal (Writer)</option>
+                    <option value="retro">Retro Terminal (Geek)</option>
+                </select>
+                <label>Layout Structure</label>
+                <select id="layout-select" onchange="updatePreview()">
+                    <option value="hero">Centered Hero</option>
+                    <option value="sidebar">Sidebar Navigation</option>
+                </select>
+            </div>
+        </div>
+
+        <div>
+            <div class="section-header">
+                <h2>Profile Header</h2>
+            </div>
+            <div class="input-group">
+                <label>Full Name</label>
+                <input type="text" id="name" value="Alex Dev" oninput="updatePreview()">
+                <label>Job Title</label>
+                <input type="text" id="title" value="Creative Technologist" oninput="updatePreview()">
+                
+                <label>Profile Image URL</label>
+                <input type="url" id="profile-img" placeholder="https://..." value="https://ui-avatars.com/api/?name=Alex+Dev&background=random" oninput="updatePreview()">
+                
+                <label>Hero/Banner Image URL (Optional)</label>
+                <input type="url" id="hero-img" placeholder="https://..." oninput="updatePreview()">
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:5px; margin-top:5px;">
+                    <input type="text" id="email" placeholder="Email" oninput="updatePreview()">
+                    <input type="text" id="github" placeholder="GitHub URL" value="https://github.com" oninput="updatePreview()">
+                    <input type="text" id="linkedin" placeholder="LinkedIn URL" oninput="updatePreview()">
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="section-header">
+                <h2>About Section</h2>
+                <label class="toggle-wrapper"><input type="checkbox" id="show-about" checked onchange="updatePreview()"> Enable</label>
+            </div>
+            <div class="input-group">
+                <textarea id="bio" oninput="updatePreview()">I turn coffee into code and ideas into reality. Specializing in frontend architecture and UX design.</textarea>
+            </div>
+        </div>
+
+        <div>
+            <div class="section-header">
+                <h2>Skills</h2>
+                <label class="toggle-wrapper"><input type="checkbox" id="show-skills" checked onchange="updatePreview()"> Enable</label>
+            </div>
+            <div class="input-group">
+                <div id="skills-list" class="tag-container"></div>
+                <div style="display:flex; gap:5px;">
+                    <input type="text" id="new-skill-input" placeholder="New Skill (e.g. React)">
+                    <button class="btn btn-primary" style="width:auto;" onclick="addSkill()">Add</button>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="section-header">
+                <h2>FAQ / Q&A</h2>
+                <label class="toggle-wrapper"><input type="checkbox" id="show-faq" onchange="updatePreview()"> Enable</label>
+            </div>
+            <div id="faq-list"></div>
+            <button class="btn btn-add" onclick="addFaq()">+ Add Question</button>
+        </div>
+
+        <div>
+            <div class="section-header">
+                <h2>Project Categories</h2>
+            </div>
+            <div class="input-group">
+                <p style="font-size:0.75rem; color:#64748b; margin:0 0 10px;">Define categories to group your projects (e.g. "Web", "Mobile", "Design").</p>
+                <div id="categories-list" class="tag-container"></div>
+                <div style="display:flex; gap:5px;">
+                    <input type="text" id="new-cat-input" placeholder="New Category">
+                    <button class="btn btn-primary" style="width:auto;" onclick="addCategory()">Add</button>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="section-header">
+                <h2>Projects</h2>
+                <label class="toggle-wrapper"><input type="checkbox" id="show-projects" checked onchange="updatePreview()"> Enable</label>
+            </div>
+            <div id="projects-list"></div>
+            <button class="btn btn-add" onclick="addProject()">+ Add Project</button>
+        </div>
+
+    </div>
+
+    <div class="preview-pane">
+        <div class="toolbar">
+            <span style="font-weight:600;">Live Preview</span>
+            <button class="btn btn-primary" style="width:auto; padding: 8px 20px;" onclick="generateCode()">Generate Website Code</button>
+        </div>
+        <iframe id="preview-frame"></iframe>
+    </div>
+</div>
+
+<div id="code-modal" class="modal">
+    <div class="modal-content">
+        <h2 style="border:none;">Ready to Deploy!</h2>
+        <p>1. Create an <code>index.html</code> file in your GitHub repository.<br>2. Paste the code below.<br>3. Enable GitHub Pages in Settings.</p>
+        <textarea id="final-code" class="code-area" readonly></textarea>
+        <div style="display:flex; justify-content:flex-end; gap:10px;">
+            <button class="btn btn-add" style="width:auto;" onclick="document.getElementById('code-modal').style.display='none'">Close</button>
+            <button class="btn btn-primary" style="width:auto;" onclick="copyCode()">Copy to Clipboard</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --- STATE ---
+    let skills = ["JavaScript", "HTML5", "CSS3", "Git"];
+    let categories = ["Web Development", "Data Science"];
+    let projects = [
+        { title: "Portfolio Generator", desc: "A tool to build static sites quickly.", link: "#", category: "Web Development" },
+        { title: "Sales Analysis", desc: "Python pandas analysis of Q3 sales.", link: "#", category: "Data Science" }
+    ];
+    let faqs = [
+        { q: "Are you available for freelance?", a: "Yes! Please email me to discuss your project." },
+        { q: "What is your tech stack?", a: "I primarily work with React, Node.js, and Python." }
+    ];
+
+    // --- DOM REFERENCES ---
+    const dom = {
+        skills: document.getElementById('skills-list'),
+        categories: document.getElementById('categories-list'),
+        projects: document.getElementById('projects-list'),
+        faqs: document.getElementById('faq-list'),
+        iframe: document.getElementById('preview-frame'),
+        skillInput: document.getElementById('new-skill-input'),
+        catInput: document.getElementById('new-cat-input')
+    };
+
+    // --- RENDER FUNCTIONS ---
+    
+    function renderSkills() {
+        dom.skills.innerHTML = skills.map((s, i) => `
+            <span class="category-tag">
+                ${s} <span style="cursor:pointer; font-weight:bold;" onclick="removeSkill(${i})">&times;</span>
+            </span>
+        `).join('');
+    }
+
+    function renderCategories() {
+        dom.categories.innerHTML = categories.map((c, i) => `
+            <span class="category-tag" style="background:#dbeafe; color:#1e40af;">
+                ${c} <span style="cursor:pointer; font-weight:bold;" onclick="removeCategory(${i})">&times;</span>
+            </span>
+        `).join('');
+        renderProjects(); // Re-render projects to update dropdowns
+    }
+
+    function renderFaqs() {
+        dom.faqs.innerHTML = faqs.map((f, i) => `
+            <div class="list-item">
+                <div class="list-item-header">
+                    <input type="text" placeholder="Question" value="${f.q}" 
+                           oninput="updateFaq(${i}, 'q', this.value)" style="width:80%; font-weight:600;">
+                    <button class="btn btn-remove" onclick="removeFaq(${i})">Del</button>
+                </div>
+                <textarea placeholder="Answer" oninput="updateFaq(${i}, 'a', this.value)" 
+                          style="height:60px;">${f.a}</textarea>
+            </div>
+        `).join('');
+    }
+
+    function renderProjects() {
+        dom.projects.innerHTML = projects.map((p, i) => {
+            const options = categories.map(c => 
+                `<option value="${c}" ${c === p.category ? 'selected' : ''}>${c}</option>`
+            ).join('');
+
+            return `
+            <div class="list-item">
+                <div class="list-item-header">
+                    <input type="text" placeholder="Project Title" value="${p.title}" 
+                           oninput="updateProject(${i}, 'title', this.value)" style="width:70%; border:none; font-weight:bold; padding:0;">
+                    <button class="btn btn-remove" onclick="removeProject(${i})">Delete</button>
+                </div>
+                <textarea placeholder="Description" oninput="updateProject(${i}, 'desc', this.value)" 
+                          style="margin-bottom:8px; height:60px;">${p.desc}</textarea>
+                <div style="display:grid; grid-template-columns: 2fr 1fr; gap:10px;">
+                    <input type="text" placeholder="Project Link" value="${p.link}" oninput="updateProject(${i}, 'link', this.value)">
+                    <select onchange="updateProject(${i}, 'category', this.value)">
+                        <option value="">No Category</option>
+                        ${options}
+                    </select>
+                </div>
+            </div>
+            `;
+        }).join('');
+    }
+
+    // --- LOGIC HANDLERS ---
+    window.addSkill = () => { if(dom.skillInput.value) { skills.push(dom.skillInput.value); dom.skillInput.value=''; renderSkills(); updatePreview(); }};
+    window.removeSkill = (i) => { skills.splice(i,1); renderSkills(); updatePreview(); };
+
+    window.addCategory = () => { if(dom.catInput.value) { categories.push(dom.catInput.value); dom.catInput.value=''; renderCategories(); updatePreview(); }};
+    window.removeCategory = (i) => { categories.splice(i,1); renderCategories(); updatePreview(); };
+
+    window.addFaq = () => { faqs.push({q: "New Question?", a: "Answer here."}); renderFaqs(); updatePreview(); };
+    window.removeFaq = (i) => { faqs.splice(i,1); renderFaqs(); updatePreview(); };
+    window.updateFaq = (i, k, v) => { faqs[i][k] = v; updatePreview(); };
+
+    window.addProject = () => { projects.push({title:"New Project", desc:"", link:"", category: categories[0]||""}); renderProjects(); updatePreview(); };
+    window.removeProject = (i) => { projects.splice(i,1); renderProjects(); updatePreview(); };
+    window.updateProject = (i, k, v) => { projects[i][k] = v; updatePreview(); };
+
+    // --- GENERATOR CORE ---
+
+    function getThemes(themeName) {
+        const t = {
+            modern: { bg: "#ffffff", text: "#1f2937", accent: "#3b82f6", card: "#f9fafb", border: "0", font: "'Inter', sans-serif" },
+            dark: { bg: "#0f172a", text: "#cbd5e1", accent: "#38bdf8", card: "#1e293b", border: "1px solid #334155", font: "'Fira Code', monospace" },
+            minimal: { bg: "#fffbf0", text: "#292524", accent: "#ea580c", card: "transparent", border: "0", font: "'Georgia', serif" },
+            retro: { bg: "#000000", text: "#00ff00", accent: "#00ff00", card: "#000", border: "1px solid #00ff00", font: "'VT323', monospace" }
+        };
+        return t[themeName] || t.modern;
+    }
+
+    function buildHTML() {
+        // Collect Data
+        const config = {
+            theme: document.getElementById('theme-select').value,
+            layout: document.getElementById('layout-select').value,
+            showAbout: document.getElementById('show-about').checked,
+            showSkills: document.getElementById('show-skills').checked,
+            showProjects: document.getElementById('show-projects').checked,
+            showFaq: document.getElementById('show-faq').checked,
+            data: {
+                name: document.getElementById('name').value,
+                title: document.getElementById('title').value,
+                bio: document.getElementById('bio').value,
+                email: document.getElementById('email').value,
+                github: document.getElementById('github').value,
+                linkedin: document.getElementById('linkedin').value,
+                profileImg: document.getElementById('profile-img').value,
+                heroImg: document.getElementById('hero-img').value,
+                seoTitle: document.getElementById('seo-title').value,
+                seoDesc: document.getElementById('seo-desc').value,
+                seoCanonical: document.getElementById('seo-canonical').value
+            }
+        };
+
+        const themeCSS = getThemes(config.theme);
+        
+        // CSS GENERATION
+        let styles = `
+            :root { 
+                --bg: ${themeCSS.bg}; --text: ${themeCSS.text}; --accent: ${themeCSS.accent}; 
+                --card-bg: ${themeCSS.card}; --card-border: ${themeCSS.border}; 
+                --font-main: ${themeCSS.font};
+            }
+            body { background: var(--bg); color: var(--text); font-family: var(--font-main); margin: 0; line-height: 1.6; }
+            a { color: var(--accent); text-decoration: none; }
+            a:hover { text-decoration: underline; }
+            
+            /* Layouts */
+            .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+            
+            header { text-align: center; padding: 4rem 1rem; position: relative; }
+            ${config.data.heroImg ? `header.has-hero { background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('${config.data.heroImg}'); background-size: cover; background-position: center; color: white; }` : ''}
+            
+            .profile-img { width: 120px; height: 120px; object-fit: cover; margin-bottom: 1rem; border: 3px solid var(--accent); }
+            ${config.theme === 'modern' || config.theme === 'dark' ? '.profile-img { border-radius: 50%; }' : ''}
+            
+            h1 { font-size: 2.5rem; margin: 0 0 0.5rem 0; ${config.theme==='retro' ? 'text-transform: uppercase;' : ''} }
+            h2 { border-bottom: 2px solid var(--accent); padding-bottom: 0.5rem; margin-top: 3rem; display: inline-block; }
+            .subtitle { font-size: 1.25rem; opacity: 0.8; margin-bottom: 1.5rem; }
+            
+            /* Grids */
+            .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
+            
+            /* Cards */
+            .card { background: var(--card-bg); border: var(--card-border); padding: 1.5rem; border-radius: 8px; transition: transform 0.2s; }
+            .card:hover { transform: translateY(-3px); }
+            .card h3 { margin-top: 0; color: var(--accent); }
+            
+            /* Skills */
+            .skill-cloud { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+            .skill-tag { background: var(--accent); color: ${config.theme === 'retro' || config.theme === 'dark' ? 'black' : 'white'}; padding: 0.25rem 0.75rem; border-radius: 50px; font-size: 0.9rem; font-weight: bold; }
+            
+            /* FAQ Accordion */
+            details { background: var(--card-bg); border: var(--card-border); padding: 1rem; border-radius: 6px; margin-bottom: 0.5rem; cursor: pointer; }
+            summary { font-weight: bold; list-style: none; display: flex; align-items: center; justify-content: space-between; }
+            summary::after { content: '+'; font-size: 1.2rem; }
+            details[open] summary::after { content: '-'; }
+            details[open] summary { margin-bottom: 0.5rem; border-bottom: 1px solid rgba(0,0,0,0.1); padding-bottom: 0.5rem; }
+            ${config.theme === 'retro' ? `summary::before { content: "> "; margin-right: 5px; }` : ''}
+
+            /* Sidebar Specific */
+            @media(min-width: 800px) {
+                body.layout-sidebar { display: grid; grid-template-columns: 300px 1fr; }
+                body.layout-sidebar header { height: 100vh; position: sticky; top: 0; text-align: left; padding: 3rem; display: flex; flex-direction: column; justify-content: center; border-right: 1px solid rgba(0,0,0,0.1); }
+                body.layout-sidebar main { padding: 3rem; }
+                body.layout-sidebar .profile-img { margin-left: 0; }
+            }
+
+            footer { text-align: center; padding: 4rem 1rem 2rem; font-size: 0.8rem; opacity: 0.6; }
+        `;
+
+        // HTML CONTENT GENERATION
+
+        // 1. Header
+        const headerHTML = `
+            ${config.data.profileImg ? `<img src="${config.data.profileImg}" class="profile-img" alt="Profile">` : ''}
+            <h1>${config.data.name}</h1>
+            <div class="subtitle">${config.data.title}</div>
+            <div class="socials">
+                ${config.data.email ? `<a href="mailto:${config.data.email}">Email</a> &bull; ` : ''}
+                ${config.data.github ? `<a href="${config.data.github}" target="_blank">GitHub</a> &bull; ` : ''}
+                ${config.data.linkedin ? `<a href="${config.data.linkedin}" target="_blank">LinkedIn</a>` : ''}
+            </div>
+        `;
+
+        // 2. Sections
+        let mainHTML = '';
+
+        if (config.showAbout && config.data.bio) {
+            mainHTML += `
+                <section>
+                    <h2>About</h2>
+                    <p style="font-size: 1.1rem;">${config.data.bio.replace(/\n/g, '<br>')}</p>
+                </section>
+            `;
+        }
+
+        if (config.showSkills && skills.length > 0) {
+            mainHTML += `
+                <section>
+                    <h2>Skills</h2>
+                    <div class="skill-cloud">
+                        ${skills.map(s => `<span class="skill-tag">${s}</span>`).join('')}
+                    </div>
+                </section>
+            `;
+        }
+
+        if (config.showProjects && projects.length > 0) {
+            const activeCategories = [...new Set([...categories, "Uncategorized"])];
+            let projectsHTML = `<section><h2>Projects</h2>`;
+            activeCategories.forEach(cat => {
+                const catProjects = projects.filter(p => (p.category === cat) || (cat === "Uncategorized" && !p.category));
+                if (catProjects.length > 0) {
+                    projectsHTML += `<h3 style="margin-top:2rem; margin-bottom: 1rem; opacity:0.7; text-transform:uppercase; font-size:0.9rem; letter-spacing:1px;">${cat}</h3>`;
+                    projectsHTML += `<div class="grid">`;
+                    catProjects.forEach(p => {
+                        projectsHTML += `
+                            <div class="card">
+                                <h3>${p.title}</h3>
+                                <p>${p.desc}</p>
+                                ${p.link ? `<a href="${p.link}" target="_blank">View Project &rarr;</a>` : ''}
+                            </div>
+                        `;
+                    });
+                    projectsHTML += `</div>`;
+                }
+            });
+            projectsHTML += `</section>`;
+            mainHTML += projectsHTML;
+        }
+
+        // FAQ Generation
+        if (config.showFaq && faqs.length > 0) {
+            let faqHTML = `<section><h2>FAQ</h2>`;
+            faqs.forEach(f => {
+                faqHTML += `
+                    <details>
+                        <summary>${f.q}</summary>
+                        <p>${f.a}</p>
+                    </details>
+                `;
+            });
+            faqHTML += `</section>`;
+            mainHTML += faqHTML;
+        }
+
+        // 3. Assemble
+        const bodyClass = config.layout === 'sidebar' ? 'layout-sidebar' : '';
+        const headerClass = config.data.heroImg && config.layout !== 'sidebar' ? 'has-hero' : '';
+
+        // Default SEO if empty
+        const finalTitle = config.data.seoTitle || `${config.data.name} - ${config.data.title}`;
+        const finalDesc = config.data.seoDesc || (config.data.bio ? config.data.bio.substring(0, 150) : "Personal Portfolio");
+
+        const fullHTML = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${finalTitle}</title>
+    <meta name="description" content="${finalDesc}">
+    ${config.data.seoCanonical ? `<link rel="canonical" href="${config.data.seoCanonical}" />` : ''}
+    
+    <style>${styles}</style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Fira+Code&family=VT323&display=swap" rel="stylesheet">
+</head>
+<body class="${bodyClass}">
+
+    <header class="${headerClass}">
+        ${config.layout === 'sidebar' ? '' : '<div class="container">'}
+        ${headerHTML}
+        ${config.layout === 'sidebar' ? '' : '</div>'}
+    </header>
+
+    <main class="${config.layout === 'sidebar' ? '' : 'container'}">
+        ${mainHTML}
+        
+        <footer>
+            <p>&copy; ${new Date().getFullYear()} ${config.data.name}</p>
+            <p>Created using <a href="https://pierrecochart.github.io/github-website-builder/" target="_blank">github website builder</a></p>
+        </footer>
+    </main>
+
+</body>
+</html>`;
+
+        return fullHTML;
+    }
+
+    // --- MAIN EXECUTIONS ---
+    function updatePreview() {
+        const html = buildHTML();
+        const blob = new Blob([html], { type: 'text/html' });
+        dom.iframe.src = URL.createObjectURL(blob);
+    }
+
+    window.generateCode = () => {
+        document.getElementById('final-code').value = buildHTML();
+        document.getElementById('code-modal').style.display = 'flex';
+    };
+
+    window.copyCode = () => {
+        document.getElementById('final-code').select();
+        document.execCommand('copy');
+        alert("Code copied!");
+    };
+
+    // Initialize
+    renderSkills();
+    renderCategories();
+    renderFaqs();
+    // Small delay to ensure styles load
+    setTimeout(updatePreview, 100);
+
+</script>
+</body>
+</html>
