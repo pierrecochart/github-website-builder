@@ -6,7 +6,7 @@
     
     <title>Ultimate GitHub Website Builder - Free Open Source Portfolio Maker</title>
     <meta name="description" content="Create a professional, SEO-optimized GitHub Pages portfolio in seconds with this free, open-source website builder. No coding required. Customizable themes and layouts.">
-    <link rel="canonical" href="https://pierrecochart.github.io/github-website-builder/">
+    <link rel="canonical" href="https://pierrecochart.github.io/">
 
     <style>
         :root {
@@ -73,7 +73,6 @@
         input:focus, textarea:focus, select:focus { outline: 2px solid var(--primary); border-color: transparent; }
         textarea { min-height: 80px; resize: vertical; }
 
-        /* Buttons */
         .btn { border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85rem; font-weight: 500; transition: 0.2s; }
         .btn-primary { background: var(--primary); color: white; width: 100%; padding: 10px; font-weight: 600; }
         .btn-primary:hover { background: #1d4ed8; }
@@ -120,7 +119,7 @@
             background-color: #FFDD00;
             color: #000000;
             text-decoration: none;
-            font-family: 'Inter', sans-serif; /* Fallback to sans-serif for clean look */
+            font-family: 'Inter', sans-serif;
             font-weight: 600;
             font-size: 1rem;
             padding: 8px 16px;
@@ -185,7 +184,7 @@
             </div>
             <div class="input-group">
                 <label>Page Title</label>
-                <input type="text" id="seo-title" placeholder="e.g. Jane Doe - Portfolio" oninput="updatePreview()">
+                <input type="text" id="seo-title" placeholder="e.g. Your Name - Portfolio" oninput="updatePreview()">
                 
                 <label>Meta Description</label>
                 <textarea id="seo-desc" placeholder="A brief summary for Google search results..." style="min-height:60px;" oninput="updatePreview()"></textarea>
@@ -221,19 +220,19 @@
             </div>
             <div class="input-group">
                 <label>Full Name</label>
-                <input type="text" id="name" value="Alex Dev" oninput="updatePreview()">
+                <input type="text" id="name" placeholder="Your Name" oninput="updatePreview()">
                 <label>Job Title</label>
-                <input type="text" id="title" value="Creative Technologist" oninput="updatePreview()">
+                <input type="text" id="title" placeholder="Your Profession" oninput="updatePreview()">
                 
                 <label>Profile Image URL</label>
-                <input type="url" id="profile-img" placeholder="https://..." value="https://ui-avatars.com/api/?name=Alex+Dev&background=random" oninput="updatePreview()">
+                <input type="url" id="profile-img" placeholder="https://..." oninput="updatePreview()">
                 
                 <label>Hero/Banner Image URL (Optional)</label>
                 <input type="url" id="hero-img" placeholder="https://..." oninput="updatePreview()">
 
                 <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:5px; margin-top:5px;">
                     <input type="text" id="email" placeholder="Email" oninput="updatePreview()">
-                    <input type="text" id="github" placeholder="GitHub URL" value="https://github.com" oninput="updatePreview()">
+                    <input type="text" id="github" placeholder="GitHub URL" oninput="updatePreview()">
                     <input type="text" id="linkedin" placeholder="LinkedIn URL" oninput="updatePreview()">
                 </div>
             </div>
@@ -245,7 +244,7 @@
                 <label class="toggle-wrapper"><input type="checkbox" id="show-about" checked onchange="updatePreview()"> Enable</label>
             </div>
             <div class="input-group">
-                <textarea id="bio" oninput="updatePreview()">I turn coffee into code and ideas into reality. Specializing in frontend architecture and UX design.</textarea>
+                <textarea id="bio" placeholder="Brief bio about yourself..." oninput="updatePreview()"></textarea>
             </div>
         </div>
 
@@ -277,7 +276,6 @@
                 <h2>Project Categories</h2>
             </div>
             <div class="input-group">
-                <p style="font-size:0.75rem; color:#64748b; margin:0 0 10px;">Define categories to group your projects (e.g. "Web", "Mobile", "Design").</p>
                 <div id="categories-list" class="tag-container"></div>
                 <div style="display:flex; gap:5px;">
                     <input type="text" id="new-cat-input" placeholder="New Category">
@@ -294,7 +292,6 @@
             <div id="projects-list"></div>
             <button class="btn btn-add" onclick="addProject()">+ Add Project</button>
         </div>
-
     </div>
 
     <div class="preview-pane">
@@ -319,7 +316,6 @@
 </div>
 
 <script>
-    // --- STATE ---
     let skills = ["JavaScript", "HTML5", "CSS3", "Git"];
     let categories = ["Web Development", "Data Science"];
     let projects = [
@@ -331,7 +327,6 @@
         { q: "What is your tech stack?", a: "I primarily work with React, Node.js, and Python." }
     ];
 
-    // --- DOM REFERENCES ---
     const dom = {
         skills: document.getElementById('skills-list'),
         categories: document.getElementById('categories-list'),
@@ -342,8 +337,6 @@
         catInput: document.getElementById('new-cat-input')
     };
 
-    // --- RENDER FUNCTIONS ---
-    
     function renderSkills() {
         dom.skills.innerHTML = skills.map((s, i) => `
             <span class="category-tag">
@@ -358,7 +351,7 @@
                 ${c} <span style="cursor:pointer; font-weight:bold;" onclick="removeCategory(${i})">&times;</span>
             </span>
         `).join('');
-        renderProjects(); // Re-render projects to update dropdowns
+        renderProjects();
     }
 
     function renderFaqs() {
@@ -402,22 +395,16 @@
         }).join('');
     }
 
-    // --- LOGIC HANDLERS ---
     window.addSkill = () => { if(dom.skillInput.value) { skills.push(dom.skillInput.value); dom.skillInput.value=''; renderSkills(); updatePreview(); }};
     window.removeSkill = (i) => { skills.splice(i,1); renderSkills(); updatePreview(); };
-
     window.addCategory = () => { if(dom.catInput.value) { categories.push(dom.catInput.value); dom.catInput.value=''; renderCategories(); updatePreview(); }};
     window.removeCategory = (i) => { categories.splice(i,1); renderCategories(); updatePreview(); };
-
     window.addFaq = () => { faqs.push({q: "New Question?", a: "Answer here."}); renderFaqs(); updatePreview(); };
     window.removeFaq = (i) => { faqs.splice(i,1); renderFaqs(); updatePreview(); };
     window.updateFaq = (i, k, v) => { faqs[i][k] = v; updatePreview(); };
-
     window.addProject = () => { projects.push({title:"New Project", desc:"", link:"", category: categories[0]||""}); renderProjects(); updatePreview(); };
     window.removeProject = (i) => { projects.splice(i,1); renderProjects(); updatePreview(); };
     window.updateProject = (i, k, v) => { projects[i][k] = v; updatePreview(); };
-
-    // --- GENERATOR CORE ---
 
     function getThemes(themeName) {
         const t = {
@@ -430,7 +417,6 @@
     }
 
     function buildHTML() {
-        // Collect Data
         const config = {
             theme: document.getElementById('theme-select').value,
             layout: document.getElementById('layout-select').value,
@@ -439,8 +425,8 @@
             showProjects: document.getElementById('show-projects').checked,
             showFaq: document.getElementById('show-faq').checked,
             data: {
-                name: document.getElementById('name').value,
-                title: document.getElementById('title').value,
+                name: document.getElementById('name').value || "Your Name",
+                title: document.getElementById('title').value || "Your Profession",
                 bio: document.getElementById('bio').value,
                 email: document.getElementById('email').value,
                 github: document.getElementById('github').value,
@@ -454,65 +440,35 @@
         };
 
         const themeCSS = getThemes(config.theme);
-        
-        // CSS GENERATION
         let styles = `
-            :root { 
-                --bg: ${themeCSS.bg}; --text: ${themeCSS.text}; --accent: ${themeCSS.accent}; 
-                --card-bg: ${themeCSS.card}; --card-border: ${themeCSS.border}; 
-                --font-main: ${themeCSS.font};
-            }
+            :root { --bg: ${themeCSS.bg}; --text: ${themeCSS.text}; --accent: ${themeCSS.accent}; --card-bg: ${themeCSS.card}; --card-border: ${themeCSS.border}; --font-main: ${themeCSS.font}; }
             body { background: var(--bg); color: var(--text); font-family: var(--font-main); margin: 0; line-height: 1.6; }
             a { color: var(--accent); text-decoration: none; }
             a:hover { text-decoration: underline; }
-            
-            /* Layouts */
             .container { max-width: 900px; margin: 0 auto; padding: 20px; }
-            
             header { text-align: center; padding: 4rem 1rem; position: relative; }
             ${config.data.heroImg ? `header.has-hero { background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('${config.data.heroImg}'); background-size: cover; background-position: center; color: white; }` : ''}
-            
             .profile-img { width: 120px; height: 120px; object-fit: cover; margin-bottom: 1rem; border: 3px solid var(--accent); }
             ${config.theme === 'modern' || config.theme === 'dark' ? '.profile-img { border-radius: 50%; }' : ''}
-            
             h1 { font-size: 2.5rem; margin: 0 0 0.5rem 0; ${config.theme==='retro' ? 'text-transform: uppercase;' : ''} }
             h2 { border-bottom: 2px solid var(--accent); padding-bottom: 0.5rem; margin-top: 3rem; display: inline-block; }
-            .subtitle { font-size: 1.25rem; opacity: 0.8; margin-bottom: 1.5rem; }
-            
-            /* Grids */
             .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; }
-            
-            /* Cards */
             .card { background: var(--card-bg); border: var(--card-border); padding: 1.5rem; border-radius: 8px; transition: transform 0.2s; }
             .card:hover { transform: translateY(-3px); }
-            .card h3 { margin-top: 0; color: var(--accent); }
-            
-            /* Skills */
             .skill-cloud { display: flex; flex-wrap: wrap; gap: 0.5rem; }
             .skill-tag { background: var(--accent); color: ${config.theme === 'retro' || config.theme === 'dark' ? 'black' : 'white'}; padding: 0.25rem 0.75rem; border-radius: 50px; font-size: 0.9rem; font-weight: bold; }
-            
-            /* FAQ Accordion */
             details { background: var(--card-bg); border: var(--card-border); padding: 1rem; border-radius: 6px; margin-bottom: 0.5rem; cursor: pointer; }
             summary { font-weight: bold; list-style: none; display: flex; align-items: center; justify-content: space-between; }
             summary::after { content: '+'; font-size: 1.2rem; }
             details[open] summary::after { content: '-'; }
-            details[open] summary { margin-bottom: 0.5rem; border-bottom: 1px solid rgba(0,0,0,0.1); padding-bottom: 0.5rem; }
-            ${config.theme === 'retro' ? `summary::before { content: "> "; margin-right: 5px; }` : ''}
-
-            /* Sidebar Specific */
             @media(min-width: 800px) {
                 body.layout-sidebar { display: grid; grid-template-columns: 300px 1fr; }
                 body.layout-sidebar header { height: 100vh; position: sticky; top: 0; text-align: left; padding: 3rem; display: flex; flex-direction: column; justify-content: center; border-right: 1px solid rgba(0,0,0,0.1); }
                 body.layout-sidebar main { padding: 3rem; }
-                body.layout-sidebar .profile-img { margin-left: 0; }
             }
-
             footer { text-align: center; padding: 4rem 1rem 2rem; font-size: 0.8rem; opacity: 0.6; }
         `;
 
-        // HTML CONTENT GENERATION
-
-        // 1. Header
         const headerHTML = `
             ${config.data.profileImg ? `<img src="${config.data.profileImg}" class="profile-img" alt="Profile">` : ''}
             <h1>${config.data.name}</h1>
@@ -524,45 +480,22 @@
             </div>
         `;
 
-        // 2. Sections
         let mainHTML = '';
-
         if (config.showAbout && config.data.bio) {
-            mainHTML += `
-                <section>
-                    <h2>About</h2>
-                    <p style="font-size: 1.1rem;">${config.data.bio.replace(/\n/g, '<br>')}</p>
-                </section>
-            `;
+            mainHTML += `<section><h2>About</h2><p style="font-size: 1.1rem;">${config.data.bio.replace(/\n/g, '<br>')}</p></section>`;
         }
-
         if (config.showSkills && skills.length > 0) {
-            mainHTML += `
-                <section>
-                    <h2>Skills</h2>
-                    <div class="skill-cloud">
-                        ${skills.map(s => `<span class="skill-tag">${s}</span>`).join('')}
-                    </div>
-                </section>
-            `;
+            mainHTML += `<section><h2>Skills</h2><div class="skill-cloud">${skills.map(s => `<span class="skill-tag">${s}</span>`).join('')}</div></section>`;
         }
-
         if (config.showProjects && projects.length > 0) {
             const activeCategories = [...new Set([...categories, "Uncategorized"])];
             let projectsHTML = `<section><h2>Projects</h2>`;
             activeCategories.forEach(cat => {
                 const catProjects = projects.filter(p => (p.category === cat) || (cat === "Uncategorized" && !p.category));
                 if (catProjects.length > 0) {
-                    projectsHTML += `<h3 style="margin-top:2rem; margin-bottom: 1rem; opacity:0.7; text-transform:uppercase; font-size:0.9rem; letter-spacing:1px;">${cat}</h3>`;
-                    projectsHTML += `<div class="grid">`;
+                    projectsHTML += `<h3 style="margin-top:2rem; margin-bottom: 1rem; opacity:0.7; text-transform:uppercase; font-size:0.9rem; letter-spacing:1px;">${cat}</h3><div class="grid">`;
                     catProjects.forEach(p => {
-                        projectsHTML += `
-                            <div class="card">
-                                <h3>${p.title}</h3>
-                                <p>${p.desc}</p>
-                                ${p.link ? `<a href="${p.link}" target="_blank">View Project &rarr;</a>` : ''}
-                            </div>
-                        `;
+                        projectsHTML += `<div class="card"><h3>${p.title}</h3><p>${p.desc}</p>${p.link ? `<a href="${p.link}" target="_blank">View Project &rarr;</a>` : ''}</div>`;
                     });
                     projectsHTML += `</div>`;
                 }
@@ -570,31 +503,19 @@
             projectsHTML += `</section>`;
             mainHTML += projectsHTML;
         }
-
-        // FAQ Generation
         if (config.showFaq && faqs.length > 0) {
             let faqHTML = `<section><h2>FAQ</h2>`;
-            faqs.forEach(f => {
-                faqHTML += `
-                    <details>
-                        <summary>${f.q}</summary>
-                        <p>${f.a}</p>
-                    </details>
-                `;
-            });
+            faqs.forEach(f => { faqHTML += `<details><summary>${f.q}</summary><p>${f.a}</p></details>`; });
             faqHTML += `</section>`;
             mainHTML += faqHTML;
         }
 
-        // 3. Assemble
         const bodyClass = config.layout === 'sidebar' ? 'layout-sidebar' : '';
         const headerClass = config.data.heroImg && config.layout !== 'sidebar' ? 'has-hero' : '';
-
-        // Default SEO if empty
         const finalTitle = config.data.seoTitle || `${config.data.name} - ${config.data.title}`;
         const finalDesc = config.data.seoDesc || (config.data.bio ? config.data.bio.substring(0, 150) : "Personal Portfolio");
 
-        const fullHTML = `<!DOCTYPE html>
+        return `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -602,34 +523,26 @@
     <title>${finalTitle}</title>
     <meta name="description" content="${finalDesc}">
     ${config.data.seoCanonical ? `<link rel="canonical" href="${config.data.seoCanonical}" />` : ''}
-    
     <style>${styles}</style>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Fira+Code&family=VT323&display=swap" rel="stylesheet">
 </head>
 <body class="${bodyClass}">
-
     <header class="${headerClass}">
         ${config.layout === 'sidebar' ? '' : '<div class="container">'}
         ${headerHTML}
         ${config.layout === 'sidebar' ? '' : '</div>'}
     </header>
-
     <main class="${config.layout === 'sidebar' ? '' : 'container'}">
         ${mainHTML}
-        
         <footer>
             <p>&copy; ${new Date().getFullYear()} ${config.data.name}</p>
             <p>Created using <a href="https://pierrecochart.github.io/github-website-builder/" target="_blank">github website builder</a></p>
         </footer>
     </main>
-
 </body>
 </html>`;
-
-        return fullHTML;
     }
 
-    // --- MAIN EXECUTIONS ---
     function updatePreview() {
         const html = buildHTML();
         const blob = new Blob([html], { type: 'text/html' });
@@ -647,13 +560,10 @@
         alert("Code copied!");
     };
 
-    // Initialize
     renderSkills();
     renderCategories();
     renderFaqs();
-    // Small delay to ensure styles load
     setTimeout(updatePreview, 100);
-
 </script>
 </body>
 </html>
